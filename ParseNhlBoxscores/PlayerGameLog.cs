@@ -8,27 +8,38 @@ namespace ParseNhlBoxscores
 {
     class PlayerGameLog
     {
-        private int NhlGameId { get; set; }
-        private int PlayerNumber { get; set; }
-        private string PlayerName { get; set; }
-        private int Goals { get; set; }
-        private int Assists { get; set; }
-        private int Points { get; set; }
-        private int PlusMinus { get; set; }
-        private int Penalty { get; set; }
-        private int PenaltyMinutes { get; set; }
-        private int TotalToi { get; set; }
-        private int PpToi { get; set; }
-        private int ShToi { get; set; }
-        private int EvToi { get; set; }
-        private int Shots { get; set; }
-        private int AttemptsBlocked { get; set; }
-        private int MissedShots { get; set; }
-        private int Hits { get; set; }
-        private int Giveaways { get; set; }
-        private int Takeaways { get; set; }
-        private int BlockedShots { get; set; }
-        private int FaceoffsWon { get; set; }
-        private int FaceoffsLost { get; set; }
+        public string NhlGameId { get; set; }
+        public string Team { get; set; }
+        public int PlayerNumber { get; set; }
+        public string PlayerName { get; set; }
+        public int Goals { get; set; }
+        public int Assists { get; set; }
+        public int Points { get; set; }
+        public int PlusMinus { get; set; }
+        public int Penalty { get; set; }
+        public int PenaltyMinutes { get; set; }
+        public int TotalToi { get; set; }
+        public int PpToi { get; set; }
+        public int ShToi { get; set; }
+        public int EvToi { get; set; }
+        public int Shots { get; set; }
+        public int AttemptsBlocked { get; set; }
+        public int MissedShots { get; set; }
+        public int Hits { get; set; }
+        public int Giveaways { get; set; }
+        public int Takeaways { get; set; }
+        public int BlockedShots { get; set; }
+        public int FaceoffsWon { get; set; }
+        public int FaceoffsLost { get; set; }
+
+        public void Print()
+        {
+            Console.WriteLine(NhlGameId);
+            Console.WriteLine(PlayerNumber);
+            Console.WriteLine(PlayerName);
+            Console.WriteLine(Goals);
+
+            Console.ReadLine();
+        }
     }
 }

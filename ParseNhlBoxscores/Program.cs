@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Fizzler.Systems.HtmlAgilityPack;
 using HtmlAgilityPack;
+using System.Linq;
 
 namespace ParseNhlBoxscores
 {
@@ -17,9 +18,11 @@ namespace ParseNhlBoxscores
 
             foreach (var gameId in gameIdList)
             {
-                Console.WriteLine(GetPlayerGameLogs(gameId));
+                var a = GetPlayerGameLogs(gameId);
+                a[0].Print();
+                continue;
             }
-            Console.ReadLine();
+
 
 
 
@@ -109,30 +112,105 @@ namespace ParseNhlBoxscores
             return game;
         }
 
-        static IEnumerable<PlayerGameLog> GetPlayerGameLogs(string gameId)
+        static int ConvertStringToInt(string s)
+        {
+            if (s.Contains("&nbsp") || s.Contains(" "))
+            {
+                return 0;
+            }
+            else
+                return Convert.ToInt16(s);
+        }
+
+        static List<PlayerGameLog> GetPlayerGameLogs(string gameId)
         {
             var playerGameLogList = new List<PlayerGameLog>();
-            //var playerGameLog = new PlayerGameLog();
+            var playerGameLog = new PlayerGameLog();
+            playerGameLog.NhlGameId = gameId;
+            
+            String team = null;
 
             var document = GetGameDocument(gameId);
             var allGridNodes = document.DocumentNode.QuerySelectorAll("body > table > tr:nth-child(8) > td > table > tr");
 
             foreach (HtmlNode tr in allGridNodes)
             {
-                
+                var tds = tr.QuerySelectorAll("td");
+                var firstTd = tds.First();
+
+                String tdClass;
+                String trClass;
+
+                if (firstTd.InnerText.Contains("&nbsp")) // Not a valid TR line
+                {
+                    continue;
+                }
+
+                if (firstTd.Attributes["class"] != null)
+                {
+                    tdClass = firstTd.Attributes["class"].Value;
+
+                    if ((tdClass.Contains("visitorsectionheading") && !(firstTd.InnerText.Contains("TOT")) && !(firstTd.InnerText.Contains("TEAM TOTALS")))) // This is a team header line
+                    {
+                        team = firstTd.InnerText;
+                        continue;
+                    }
+
+                    if ((tdClass.Contains("homesectionheading") && !(firstTd.InnerText.Contains("TOT")) && !(firstTd.InnerText.Contains("TEAM TOTALS")))) // This is a team header line
+                    {
+                        team = firstTd.InnerText;
+                        continue;
+                    }
+                }
+
+                if (tr.Attributes["class"] != null)
+                {
+                    trClass = tr.Attributes["class"].Value;
+                    if ((trClass.Contains("evenColor") || trClass.Contains("oddColor")) && !(firstTd.InnerText.Contains("TEAM TOTALS"))) // This is a player log line
+                    {
+                        if (!tds.ElementAt(1).InnerText.Contains("G")) // Not importing goalies
+                        {
+                            // Set Player Number
+                            playerGameLog.PlayerNumber = ConvertStringToInt(tds.ElementAt(0).InnerText);
+                            
+                            // Set Player Name
+                            playerGameLog.PlayerName = tds.ElementAt(2).InnerText;
+                            
+                            // Set Goals
+                            playerGameLog.Goals = ConvertStringToInt(tds.ElementAt(3).InnerText);
+                            playerGameLog.Assists = ConvertStringToInt(tds.ElementAt(4).InnerText);
+                            playerGameLog.Points = ConvertStringToInt(tds.ElementAt(5).InnerText);
+                            playerGameLog.PlusMinus = ConvertStringToInt(tds.ElementAt(6).InnerText);
+                            playerGameLog.Penalty = ConvertStringToInt(tds.ElementAt(7).InnerText);
+                            playerGameLog.PenaltyMinutes = ConvertStringToInt(tds.ElementAt(8).InnerText);
+                            playerGameLog.TotalToi = ConvertStringToInt(tds.ElementAt(9).InnerText);        // Must convert to 100 sec
+                            playerGameLog.PpToi = ConvertStringToInt(tds.ElementAt(12).InnerText);          // Must convert to 100 sec
+                            playerGameLog.ShToi = ConvertStringToInt(tds.ElementAt(13).InnerText);          // Must convert to 100 sec
+                            playerGameLog.EvToi = ConvertStringToInt(tds.ElementAt(14).InnerText);          // Must convert to 100 sec
+                            playerGameLog.Shots = ConvertStringToInt(tds.ElementAt(15).InnerText);
+                            playerGameLog.AttemptsBlocked = ConvertStringToInt(tds.ElementAt(16).InnerText);
+                            playerGameLog.MissedShots = ConvertStringToInt(tds.ElementAt(17).InnerText);
+                            playerGameLog.Hits = ConvertStringToInt(tds.ElementAt(18).InnerText);
+                            playerGameLog.Giveaways = ConvertStringToInt(tds.ElementAt(19).InnerText);
+                            playerGameLog.Takeaways = ConvertStringToInt(tds.ElementAt(20).InnerText);
+                            playerGameLog.BlockedShots = ConvertStringToInt(tds.ElementAt(21).InnerText);
+                            playerGameLog.FaceoffsWon = ConvertStringToInt(tds.ElementAt(22).InnerText);
+                            playerGameLog.FaceoffsLost = ConvertStringToInt(tds.ElementAt(23).InnerText);
+
+                            playerGameLog.Team = team;
+                            playerGameLogList.Add(playerGameLog);
+                        }
+                    }
+                }
+
             }
 
-
-
-            Console.WriteLine();
-
-
-            var playerGameLog = new PlayerGameLog();
-            playerGameLogList.Add(playerGameLog);
             return playerGameLogList;
 
-
         }
+
+        
+
 
     }
 }
