@@ -18,10 +18,10 @@ namespace ParseNhlBoxscores
         public int PlusMinus { get; set; }
         public int Penalty { get; set; }
         public int PenaltyMinutes { get; set; }
-        public int TotalToi { get; set; }
-        public int PpToi { get; set; }
-        public int ShToi { get; set; }
-        public int EvToi { get; set; }
+        public TimeSpan TotalToi { get; set; }
+        public TimeSpan PpToi { get; set; }
+        public TimeSpan ShToi { get; set; }
+        public TimeSpan EvToi { get; set; }
         public int Shots { get; set; }
         public int AttemptsBlocked { get; set; }
         public int MissedShots { get; set; }

@@ -122,6 +122,12 @@ namespace ParseNhlBoxscores
                 return Convert.ToInt16(s);
         }
 
+        static TimeSpan ConvertToi(string s)
+        {
+            string[] sa = s.Split(':');
+            return new TimeSpan(0, Convert.ToInt16(sa[0]), Convert.ToInt16(sa[1]));
+        }
+
         static List<PlayerGameLog> GetPlayerGameLogs(string gameId)
         {
             var playerGameLogList = new List<PlayerGameLog>();
@@ -183,10 +189,10 @@ namespace ParseNhlBoxscores
                             playerGameLog.PlusMinus = ConvertStringToInt(tds.ElementAt(6).InnerText);
                             playerGameLog.Penalty = ConvertStringToInt(tds.ElementAt(7).InnerText);
                             playerGameLog.PenaltyMinutes = ConvertStringToInt(tds.ElementAt(8).InnerText);
-                            playerGameLog.TotalToi = ConvertStringToInt(tds.ElementAt(9).InnerText);        // Must convert to 100 sec
-                            playerGameLog.PpToi = ConvertStringToInt(tds.ElementAt(12).InnerText);          // Must convert to 100 sec
-                            playerGameLog.ShToi = ConvertStringToInt(tds.ElementAt(13).InnerText);          // Must convert to 100 sec
-                            playerGameLog.EvToi = ConvertStringToInt(tds.ElementAt(14).InnerText);          // Must convert to 100 sec
+                            playerGameLog.TotalToi = ConvertToi(tds.ElementAt(9).InnerText);        // Must convert to 100 sec
+                            playerGameLog.PpToi = ConvertToi(tds.ElementAt(12).InnerText);          // Must convert to 100 sec
+                            playerGameLog.ShToi = ConvertToi(tds.ElementAt(13).InnerText);          // Must convert to 100 sec
+                            playerGameLog.EvToi = ConvertToi(tds.ElementAt(14).InnerText);          // Must convert to 100 sec
                             playerGameLog.Shots = ConvertStringToInt(tds.ElementAt(15).InnerText);
                             playerGameLog.AttemptsBlocked = ConvertStringToInt(tds.ElementAt(16).InnerText);
                             playerGameLog.MissedShots = ConvertStringToInt(tds.ElementAt(17).InnerText);
