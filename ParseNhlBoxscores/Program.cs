@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Fizzler.Systems.HtmlAgilityPack;
 using HtmlAgilityPack;
 using System.Linq;
@@ -14,13 +11,12 @@ namespace ParseNhlBoxscores
     {
         static void Main()
         {
-            List<string> gameIdList = GetLastNightGameIds();
+            IEnumerable<string> gameIdList = GetLastNightGameIds();
 
             foreach (var gameId in gameIdList)
             {
                 var a = GetPlayerGameLogs(gameId);
                 a[0].Print();
-                continue;
             }
 
 
@@ -38,7 +34,7 @@ namespace ParseNhlBoxscores
             Console.ReadLine();
         }
 
-        static List<string> GetLastNightGameIds()
+        static IEnumerable<string> GetLastNightGameIds()
         {
             var web = new HtmlWeb();
             var document = web.Load("http://www.nhl.com/ice/gamestats.htm?season=20142015&gameType=2&team=&viewName=summary&pg=1");
@@ -118,8 +114,7 @@ namespace ParseNhlBoxscores
             {
                 return 0;
             }
-            else
-                return Convert.ToInt16(s);
+            return Convert.ToInt16(s);
         }
 
         static TimeSpan ConvertToi(string s)
@@ -131,9 +126,8 @@ namespace ParseNhlBoxscores
         static List<PlayerGameLog> GetPlayerGameLogs(string gameId)
         {
             var playerGameLogList = new List<PlayerGameLog>();
-            var playerGameLog = new PlayerGameLog();
-            playerGameLog.NhlGameId = gameId;
-            
+            var playerGameLog = new PlayerGameLog {NhlGameId = gameId};
+
             String team = null;
 
             var document = GetGameDocument(gameId);
@@ -144,9 +138,6 @@ namespace ParseNhlBoxscores
                 var tds = tr.QuerySelectorAll("td");
                 var firstTd = tds.First();
 
-                String tdClass;
-                String trClass;
-
                 if (firstTd.InnerText.Contains("&nbsp")) // Not a valid TR line
                 {
                     continue;
@@ -154,7 +145,7 @@ namespace ParseNhlBoxscores
 
                 if (firstTd.Attributes["class"] != null)
                 {
-                    tdClass = firstTd.Attributes["class"].Value;
+                    String tdClass = firstTd.Attributes["class"].Value;
 
                     if ((tdClass.Contains("visitorsectionheading") && !(firstTd.InnerText.Contains("TOT")) && !(firstTd.InnerText.Contains("TEAM TOTALS")))) // This is a team header line
                     {
@@ -171,7 +162,7 @@ namespace ParseNhlBoxscores
 
                 if (tr.Attributes["class"] != null)
                 {
-                    trClass = tr.Attributes["class"].Value;
+                    String trClass = tr.Attributes["class"].Value;
                     if ((trClass.Contains("evenColor") || trClass.Contains("oddColor")) && !(firstTd.InnerText.Contains("TEAM TOTALS"))) // This is a player log line
                     {
                         if (!tds.ElementAt(1).InnerText.Contains("G")) // Not importing goalies
@@ -189,10 +180,10 @@ namespace ParseNhlBoxscores
                             playerGameLog.PlusMinus = ConvertStringToInt(tds.ElementAt(6).InnerText);
                             playerGameLog.Penalty = ConvertStringToInt(tds.ElementAt(7).InnerText);
                             playerGameLog.PenaltyMinutes = ConvertStringToInt(tds.ElementAt(8).InnerText);
-                            playerGameLog.TotalToi = ConvertToi(tds.ElementAt(9).InnerText);        // Must convert to 100 sec
-                            playerGameLog.PpToi = ConvertToi(tds.ElementAt(12).InnerText);          // Must convert to 100 sec
-                            playerGameLog.ShToi = ConvertToi(tds.ElementAt(13).InnerText);          // Must convert to 100 sec
-                            playerGameLog.EvToi = ConvertToi(tds.ElementAt(14).InnerText);          // Must convert to 100 sec
+                            playerGameLog.TotalToi = ConvertToi(tds.ElementAt(9).InnerText);        
+                            playerGameLog.PpToi = ConvertToi(tds.ElementAt(12).InnerText);          
+                            playerGameLog.ShToi = ConvertToi(tds.ElementAt(13).InnerText);          
+                            playerGameLog.EvToi = ConvertToi(tds.ElementAt(14).InnerText);          
                             playerGameLog.Shots = ConvertStringToInt(tds.ElementAt(15).InnerText);
                             playerGameLog.AttemptsBlocked = ConvertStringToInt(tds.ElementAt(16).InnerText);
                             playerGameLog.MissedShots = ConvertStringToInt(tds.ElementAt(17).InnerText);
@@ -208,7 +199,6 @@ namespace ParseNhlBoxscores
                         }
                     }
                 }
-
             }
 
             return playerGameLogList;
