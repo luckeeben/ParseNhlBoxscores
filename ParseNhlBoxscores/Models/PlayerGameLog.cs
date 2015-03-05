@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ParseNhlBoxscores
+namespace ParseNhlBoxscores.Models
 {
-    class PlayerGameLog
+    public class PlayerGameLog
     {
+        public PlayerGameLog() { }
+
+        public int Id { get; set; }
         public string NhlGameId { get; set; }
         public string Team { get; set; }
         public int PlayerNumber { get; set; }
@@ -34,12 +33,9 @@ namespace ParseNhlBoxscores
 
         public void Print()
         {
-            Console.WriteLine(NhlGameId);
-            Console.WriteLine(PlayerNumber);
-            Console.WriteLine(PlayerName);
-            Console.WriteLine(Goals);
+            Console.WriteLine("Saving game #" + NhlGameId + ", " + PlayerName);
 
-            Console.ReadLine();
+            //Console.ReadLine();
         }
     }
 }

@@ -28,3 +28,7 @@ C:\Users\ben\Documents\GitHub\ParseNhlBoxscores\ParseNhlBoxscores\bin\Debug\Html
 C:\Users\ben\Documents\GitHub\ParseNhlBoxscores\ParseNhlBoxscores\bin\Debug\HtmlAgilityPack.xml
 C:\Users\ben\Documents\GitHub\ParseNhlBoxscores\ParseNhlBoxscores\bin\Debug\Newtonsoft.Json.xml
 C:\Users\ben\Documents\GitHub\ParseNhlBoxscores\ParseNhlBoxscores\obj\Debug\ParseNhlBoxscores.csprojResolveAssemblyReference.cache
+C:\Users\ben\Documents\GitHub\ParseNhlBoxscores\ParseNhlBoxscores\bin\Debug\EntityFramework.dll
+C:\Users\ben\Documents\GitHub\ParseNhlBoxscores\ParseNhlBoxscores\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\ben\Documents\GitHub\ParseNhlBoxscores\ParseNhlBoxscores\bin\Debug\EntityFramework.xml
+C:\Users\ben\Documents\GitHub\ParseNhlBoxscores\ParseNhlBoxscores\bin\Debug\EntityFramework.SqlServer.xml

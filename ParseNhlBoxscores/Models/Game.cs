@@ -1,19 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ParseNhlBoxscores
+namespace ParseNhlBoxscores.Models
 {
-    class Game
+    public class Game
     {
+        public Game () {}
+            
+        public int Id { get; set; }
         public string NhlGameId { get; set; }
         public DateTime Date { get; set; }
         public string VisitorTeam { get; set; }
-        public int VisitorScore { get; set; }
+        public Nullable<int> VisitorScore { get; set; }
         public string HomeTeam { get; set; }
-        public int HomeScore { get; set; }
+        public Nullable<int> HomeScore { get; set; }
 
         public string PrintGame()
         {
