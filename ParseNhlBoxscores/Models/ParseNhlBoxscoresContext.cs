@@ -11,6 +11,7 @@ namespace ParseNhlBoxscores.Models
 
         public DbSet<Game> Games { get; set; }
         public DbSet<PlayerGameLog> PlayerGameLogs { get; set; }
-
+        public DbSet<Team> Teams { get; set; }
+        public DbSet<Player> Players { get; set; }
     }
 }

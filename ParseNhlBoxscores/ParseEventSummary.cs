@@ -7,35 +7,61 @@ using System.Linq;
 using ParseNhlBoxscores.Models;
 using static ParseNhlBoxscores.ParseNhlBoxscoresHelpers;
 using static ParseNhlBoxscores.ParseSchedule;
+using ParseNhlBoxscores.Services;
+using NLog;
 
 namespace ParseNhlBoxscores
 {
     public class ParseEventSummary
     {
+        private static ParseNhlBoxscoresContext db = new ParseNhlBoxscoresContext();
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
         public ParseEventSummary()
         {
 
         }
 
-        static public void SaveGameLogs()
+        /// <summary>
+        /// Save player game logs of all game in db
+        /// </summary>
+        static public void ProcessAllEventSummary()
         {
-            IEnumerable<string> gameIdList = GetLastNightGameIds();
+            IEnumerable<Game> gameList = db.Games;
 
-            using (var context = new ParseNhlBoxscoresContext())
+            foreach(var game in gameList)
             {
-                foreach (var gameId in gameIdList)
+                // Get Event Summary page
+                var document = GetGameDocument(game.NhlGameId);
+
+                // Save all player logs
+                var gamelogList = GetPlayerGameLogs(game.Id, document);
+                foreach (var playerGameLog in gamelogList)
                 {
-                    var gamelogList = GetPlayerGameLogs(gameId);
-                    foreach(var playerGameLog in gamelogList)
-                    {
-                        context.PlayerGameLogs.Add(playerGameLog);
-                        playerGameLog.Print();
-                    }
+                    db.PlayerGameLogs.Add(playerGameLog);
+                    logger.Info("Saving Game log:" + playerGameLog.Print());
                 }
-                context.SaveChanges();
+            }
+            db.SaveChanges();
+        }
+
+        static public void ProcessEventSummary(Game game)
+        {
+
+            // Get Event Summary page
+            var document = GetGameDocument(game.NhlGameId);
+
+            // Save all player logs
+            var gamelogList = GetPlayerGameLogs(game.Id, document);
+            foreach (var playerGameLog in gamelogList)
+            {
+                db.PlayerGameLogs.Add(playerGameLog);
+                logger.Info("Saving Game log:" + playerGameLog.Print());
             }
 
+            db.SaveChanges();
         }
+
 
         static string GetEventSummaryUrl(string gameId)
         {
@@ -49,11 +75,12 @@ namespace ParseNhlBoxscores
             return web.Load(gameUrl);
         }
 
-        static Game GetGameInfo(string gameId)
+        static Game GetGameInfo(string gameId, HtmlDocument document)
         {
             var game = new Game();
+            var TS = new TeamService();
 
-            var document = GetGameDocument(gameId);
+            //var document = GetGameDocument(gameId);
 
             // Set game id
             game.NhlGameId = gameId;
@@ -67,6 +94,7 @@ namespace ParseNhlBoxscores
             var visitorTd = document.DocumentNode.QuerySelector("#Visitor > tr:nth-child(3) > td").InnerText;
             string[] visitorTdText = Regex.Split(visitorTd, "Game");
             game.VisitorTeam = visitorTdText[0];
+            game.VisitorTeamId = TS.GetTeam(visitorTdText[0]).Id;
 
             // Set visitor score
             game.VisitorScore = Convert.ToInt32(document.DocumentNode.QuerySelector("#Visitor > tr:nth-child(2) > td > table > tr > td:nth-child(2)").InnerText);
@@ -75,6 +103,7 @@ namespace ParseNhlBoxscores
             var homeTd = document.DocumentNode.QuerySelector("#Home > tr:nth-child(3) > td").InnerText;
             string[] homeTdText = Regex.Split(homeTd, "Game");
             game.HomeTeam = homeTdText[0];
+            game.HomeTeamId = TS.GetTeam(homeTdText[0]).Id;
 
             // Set home team score
             game.HomeScore = Convert.ToInt32(document.DocumentNode.QuerySelector("#Home > tr:nth-child(2) > td > table > tr > td:nth-child(2)").InnerText);
@@ -84,14 +113,14 @@ namespace ParseNhlBoxscores
 
 
 
-        static List<PlayerGameLog> GetPlayerGameLogs(string gameId)
+        static List<PlayerGameLog> GetPlayerGameLogs(int gameId, HtmlDocument document)
         {
             var playerGameLogList = new List<PlayerGameLog>();
             
 
             String team = null;
 
-            var document = GetGameDocument(gameId);
+            //var document = GetGameDocument(gameId);
             var allGridNodes = document.DocumentNode.QuerySelectorAll("body > table > tr:nth-child(8) > td > table > tr");
 
             foreach (HtmlNode tr in allGridNodes)
@@ -128,7 +157,7 @@ namespace ParseNhlBoxscores
                     {
                         if (!tds.ElementAt(1).InnerText.Contains("G")) // Not importing goalies
                         {
-                            var playerGameLog = new PlayerGameLog { NhlGameId = gameId };
+                            var playerGameLog = new PlayerGameLog { GameId = gameId };
 
                             // Set Player Number
                             playerGameLog.PlayerNumber = ConvertStringToInt(tds.ElementAt(0).InnerText);
@@ -136,7 +165,7 @@ namespace ParseNhlBoxscores
                             // Set Player Name
                             playerGameLog.PlayerName = tds.ElementAt(2).InnerText;
 
-                            // Set Goals
+                            playerGameLog.Goals = ConvertStringToInt(tds.ElementAt(3).InnerText);
                             playerGameLog.Assists = ConvertStringToInt(tds.ElementAt(4).InnerText);
                             playerGameLog.Points = ConvertStringToInt(tds.ElementAt(5).InnerText);
                             playerGameLog.PlusMinus = ConvertStringToInt(tds.ElementAt(6).InnerText);

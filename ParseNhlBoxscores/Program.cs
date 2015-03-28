@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using static ParseNhlBoxscores.ParseEventSummary;
+using static ParseNhlBoxscores.ParseSchedule;
+using static ParseNhlBoxscores.ParsePlayerStats;
 
 namespace ParseNhlBoxscores
 {
@@ -8,17 +10,10 @@ namespace ParseNhlBoxscores
     {
         static void Main()
         {
-            SaveGameLogs();
+            GetPlayers();
+            //GetGames();
 
-            //using (var ctx = new ParseNhlBoxscoresContext())
-            //{
-            //    PlayerGameLog log = new PlayerGameLog() { PlayerName = "Benoit Cantin" };
-
-            //    ctx.PlayerGameLogs.Add(log);
-            //    ctx.SaveChanges();
-            //}
-
-
+            //ProcessAllEventSummary();
         }
 
         /* temp */

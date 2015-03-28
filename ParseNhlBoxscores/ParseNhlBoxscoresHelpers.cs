@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using HtmlAgilityPack;
+using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Fizzler.Systems.HtmlAgilityPack;
 
 namespace ParseNhlBoxscores
 {
@@ -14,13 +13,28 @@ namespace ParseNhlBoxscores
             {
                 return 0;
             }
-            return Convert.ToInt16(s);
+            return Convert.ToInt32(s);
         }
 
         public static TimeSpan ConvertToi(string s)
         {
+            if (s.Contains("&nbsp") || s.Contains(" "))
+            {
+                return new TimeSpan(0, 0, 0);
+            }
             string[] sa = s.Split(':');
-            return new TimeSpan(0, Convert.ToInt16(sa[0]), Convert.ToInt16(sa[1]));
+            return new TimeSpan(0, ConvertStringToInt(sa[0]), ConvertStringToInt(sa[1]));
+        }
+
+        public static int GetMaxPage(HtmlDocument document)
+        {
+            var aList = document.DocumentNode.QuerySelectorAll("#statsPage > div.paging > div.pages > a");
+            var href = aList.Last().GetAttributeValue("href", "ERROR");
+            if (!href.Contains("ERROR"))
+            {
+                return Convert.ToInt16(href.Split('=').Last());
+            }
+            return 1;
         }
     }
 }

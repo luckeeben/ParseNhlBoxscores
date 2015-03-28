@@ -7,7 +7,7 @@ namespace ParseNhlBoxscores.Models
         public PlayerGameLog() { }
 
         public int Id { get; set; }
-        public string NhlGameId { get; set; }
+        public int GameId { get; set; }
         public string Team { get; set; }
         public int PlayerNumber { get; set; }
         public string PlayerName { get; set; }
@@ -31,11 +31,9 @@ namespace ParseNhlBoxscores.Models
         public int FaceoffsWon { get; set; }
         public int FaceoffsLost { get; set; }
 
-        public void Print()
+        public string Print()
         {
-            Console.WriteLine("Saving game #" + NhlGameId + ", " + PlayerName);
-
-            //Console.ReadLine();
+            return "Game #" + GameId + ", " + PlayerName;
         }
     }
 }
